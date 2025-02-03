@@ -16,14 +16,14 @@ const isPrime = (num) => {
 // Function to check if a number is a perfect number
 const isPerfect = (num) => {
   let sum = 1;
-  for(let i = 2; i * i <=num; i++) {
-    if(num % 1 === 0) {
+  for (let i = 2; i * i <= num; i++) {
+    if (num % i === 0) {
       sum += i;
       if (i !== num / i) sum += num / i;
     }
   }
-  return sum === num && num !==1;
-}
+  return sum === num && num !== 1;
+};
 
 // Function to check if a number is an Armstrong number
 const isArmstrong = (num) => {
@@ -47,17 +47,19 @@ const digitSum = (num) => num.toString().split("").reduce((sum, digit) => sum + 
 router.get("/api/classify-number", async (req, res) => {
   const { number } = req.query;
 
-  // Validate input
+  // Validate input: Ensure it's a positive integer
   const parsedNumber = parseInt(number, 10);
-  if (isNaN(parsedNumber)) {
-    return res.status(400).json({number, error: true});
+
+  if (isNaN(parsedNumber) || parsedNumber <= 0) {
+    return res.status(400).json({ number, error: true });
   }
 
   try {
-    // Fetch fun fact
-    const {data: funFact } = await axios.get(`http://numbersapi.com/${parsedNumber}/math`);
+    // Fetch fun fact from Numbers API
+    const { data } = await axios.get(`http://numbersapi.com/${parsedNumber}/math?json`);
+    const funFact = data.text; // Extracting the correct text field
 
-    res.json ({
+    res.json({
       number: parsedNumber,
       is_prime: isPrime(parsedNumber),
       is_perfect: isPerfect(parsedNumber),
@@ -66,7 +68,7 @@ router.get("/api/classify-number", async (req, res) => {
       fun_fact: funFact
     });
   } catch (error) {
-    res.status(500).json({error: "Failed to fetch fun fact"});
+    res.status(500).json({ error: "Failed to fetch fun fact" });
   }
 });
 
