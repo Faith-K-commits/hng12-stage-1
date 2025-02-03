@@ -47,17 +47,16 @@ const digitSum = (num) => num.toString().split("").reduce((sum, digit) => sum + 
 router.get("/api/classify-number", async (req, res) => {
   const { number } = req.query;
 
-  // Validate input: Ensure it's a positive integer
+  // Validate input
   const parsedNumber = parseInt(number, 10);
-
   if (isNaN(parsedNumber) || parsedNumber <= 0) {
-    return res.status(400).json({ number, error: true });
+    return res.status(400).json({ number: "alphabet", error: true });
   }
 
   try {
     // Fetch fun fact from Numbers API
     const { data } = await axios.get(`http://numbersapi.com/${parsedNumber}/math?json`);
-    const funFact = data.text; // Extracting the correct text field
+    const funFact = data.text;
 
     res.json({
       number: parsedNumber,
