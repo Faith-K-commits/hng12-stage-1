@@ -1,8 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const axios = require('axios');
-
-const PORT = 3000;
+const axios = require("axios");
 
 // Function to check if a number is prime
 const isPrime = (num) => {
@@ -40,8 +38,9 @@ const getProperties = (num) => {
   return properties;
 };
 
-// Function to get the sum of digits of a number
-const digitSum = (num) => num.toString().split("").reduce((sum, digit) => sum + Number(digit), 0);
+// Function to get the sum of digits of a number (absolute value)
+const digitSum = (num) =>
+    Math.abs(num).toString().split("").reduce((sum, digit) => sum + Number(digit), 0);
 
 // API Endpoint
 router.get("/api/classify-number", async (req, res) => {
@@ -49,9 +48,11 @@ router.get("/api/classify-number", async (req, res) => {
 
   // Validate input
   const parsedNumber = parseInt(number, 10);
-  if (isNaN(parsedNumber) || parsedNumber <= 0) {
+  if (isNaN(parsedNumber)) {
     return res.status(400).json({ number: "alphabet", error: true });
   }
+
+  const absNumber = Math.abs(parsedNumber); // Absolute value for calculations
 
   try {
     // Fetch fun fact from Numbers API
@@ -61,9 +62,9 @@ router.get("/api/classify-number", async (req, res) => {
     res.json({
       number: parsedNumber,
       is_prime: isPrime(parsedNumber),
-      is_perfect: isPerfect(parsedNumber),
-      properties: getProperties(parsedNumber),
-      digit_sum: digitSum(parsedNumber),
+      is_perfect: isPerfect(absNumber),
+      properties: getProperties(absNumber),
+      digit_sum: digitSum(parsedNumber), 
       fun_fact: funFact
     });
   } catch (error) {
