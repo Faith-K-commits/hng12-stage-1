@@ -48,4 +48,4 @@ npm start
 
 ### Deployment
 The API is deployed at:
-https://hng12-stage-1-9e4i.onrender.com/api/classify-number?number=5
+https://hng12-stage-1-9e4i.onrender.com/api/classify-number?number=371
