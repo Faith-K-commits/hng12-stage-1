@@ -13,6 +13,7 @@ const isPrime = (num) => {
 
 // Function to check if a number is a perfect number
 const isPerfect = (num) => {
+  if (num < 1) return false;
   let sum = 1;
   for (let i = 2; i * i <= num; i++) {
     if (num % i === 0) {
@@ -25,6 +26,7 @@ const isPerfect = (num) => {
 
 // Function to check if a number is an Armstrong number
 const isArmstrong = (num) => {
+  if (num < 0) return false; // Armstrong numbers are only positive
   const digits = num.toString().split("").map(Number);
   const power = digits.length;
   return digits.reduce((sum, digit) => sum + digit ** power, 0) === num;
@@ -38,21 +40,37 @@ const getProperties = (num) => {
   return properties;
 };
 
-// Function to get the sum of digits of a number (absolute value)
-const digitSum = (num) =>
-    Math.abs(num).toString().split("").reduce((sum, digit) => sum + Number(digit), 0);
+// Function to get the sum of digits of a number (preserving negativity)
+const digitSum = (num) => {
+  const sum = Math.abs(num)
+      .toString()
+      .split("")
+      .reduce((sum, digit) => sum + Number(digit), 0);
+  return num < 0 ? -sum : sum; // If the number is negative, return negative sum
+};
 
 // API Endpoint
 router.get("/api/classify-number", async (req, res) => {
   const { number } = req.query;
 
-  // Validate input
-  const parsedNumber = parseInt(number, 10);
-  if (isNaN(parsedNumber)) {
+  // Validate input: Reject floats and alphabets
+  if (!/^-?\d+$/.test(number)) {
     return res.status(400).json({ number: "alphabet", error: true });
   }
 
-  const absNumber = Math.abs(parsedNumber); // Absolute value for calculations
+  const parsedNumber = Number(number);
+
+  // Handle negative numbers explicitly
+  if (parsedNumber < 0) {
+    return res.json({
+      number: parsedNumber,
+      is_prime: false,
+      is_perfect: false,
+      properties: ["odd"],
+      digit_sum: digitSum(parsedNumber), 
+      fun_fact: `${parsedNumber} is an uninteresting number.`,
+    });
+  }
 
   try {
     // Fetch fun fact from Numbers API
@@ -62,9 +80,9 @@ router.get("/api/classify-number", async (req, res) => {
     res.json({
       number: parsedNumber,
       is_prime: isPrime(parsedNumber),
-      is_perfect: isPerfect(absNumber),
-      properties: getProperties(absNumber),
-      digit_sum: digitSum(parsedNumber), 
+      is_perfect: isPerfect(parsedNumber),
+      properties: getProperties(parsedNumber),
+      digit_sum: digitSum(parsedNumber),
       fun_fact: funFact
     });
   } catch (error) {
