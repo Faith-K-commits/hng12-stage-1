@@ -66,8 +66,8 @@ router.get("/api/classify-number", async (req, res) => {
       number: parsedNumber,
       is_prime: false,
       is_perfect: false,
-      properties: ["odd"],
-      digit_sum: digitSum(parsedNumber), 
+      properties: getProperties(parsedNumber),
+      digit_sum: digitSum(parsedNumber),
       fun_fact: `${parsedNumber} is an uninteresting number.`,
     });
   }
